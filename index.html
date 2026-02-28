@@ -39,26 +39,26 @@ body { background: #7A3E1E; overflow: hidden; width: 100vw; height: 100vh; }
 .inst-box p { font-size: clamp(13px,3vw,15px); line-height: 1.7; color: #C45C1A; margin-bottom: 10px; }
 .inst-box .key { color: #FFD580; font-weight: bold; }
 .inst-tap { font-size: clamp(13px,3vw,15px); letter-spacing: 4px; color: #E8A44A; margin-top: 18px; }
-#deathScreen {
+#coreStruck {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   display: none; flex-direction: column; align-items: center; justify-content: center;
   z-index: 15; cursor: pointer; touch-action: none;
   background: rgba(0,0,0,0.8);
 }
-#deathScreen.visible { display: flex; }
-#deathScreen h2 { font-family: 'Courier New', monospace; font-size: clamp(22px,5vw,36px); color: #FF6B35; letter-spacing: 8px; margin-bottom: 16px; }
-#deathScreen p { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,16px); color: #E8A44A; margin-bottom: 8px; }
-#deathScreen .tap-restart { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,15px); letter-spacing: 4px; color: #C45C1A; margin-top: 24px; }
-#winScreen {
+#coreStruck.visible { display: flex; }
+#coreStruck h2 { font-family: 'Courier New', monospace; font-size: clamp(22px,5vw,36px); color: #FF6B35; letter-spacing: 8px; margin-bottom: 16px; }
+#coreStruck p { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,16px); color: #E8A44A; margin-bottom: 8px; }
+#coreStruck .tap-restart { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,15px); letter-spacing: 4px; color: #C45C1A; margin-top: 24px; }
+#singularity {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   display: none; flex-direction: column; align-items: center; justify-content: center;
   z-index: 15; cursor: pointer; touch-action: none;
   background: rgba(0,0,0,0.8);
 }
-#winScreen.visible { display: flex; }
-#winScreen h2 { font-family: 'Courier New', monospace; font-size: clamp(22px,5vw,32px); color: #FFD580; letter-spacing: 6px; margin-bottom: 16px; }
-#winScreen p { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,16px); color: #E8A44A; margin-bottom: 8px; }
-#winScreen .tap-restart { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,15px); letter-spacing: 4px; color: #C45C1A; margin-top: 24px; }
+#singularity.visible { display: flex; }
+#singularity h2 { font-family: 'Courier New', monospace; font-size: clamp(22px,5vw,32px); color: #FFD580; letter-spacing: 6px; margin-bottom: 16px; }
+#singularity p { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,16px); color: #E8A44A; margin-bottom: 8px; }
+#singularity .tap-restart { font-family: 'Courier New', monospace; font-size: clamp(13px,3vw,15px); letter-spacing: 4px; color: #C45C1A; margin-top: 24px; }
 </style>
 <!-- Tone.js FIRST, before importmap -->
 <script src="https://cdn.jsdelivr.net/npm/tone@15.1.22/build/Tone.js"></script>
@@ -143,17 +143,17 @@ body { background: #7A3E1E; overflow: hidden; width: 100vw; height: 100vh; }
 </div>
 
 <!-- DEATH SCREEN -->
-<div id="deathScreen">
+<div id="coreStruck">
   <h2>CORE STRUCK</h2>
-  <p id="deathScore">Score: 0</p>
-  <p id="deathLevel">Level: 1</p>
+  <p id="finalScore">Score: 0</p>
+  <p id="finalLevel">Level: 1</p>
   <div class="tap-restart">TAP TO RESTART</div>
 </div>
 
 <!-- WIN SCREEN -->
-<div id="winScreen">
+<div id="singularity">
   <h2>SINGULARITY</h2>
-  <p id="winScore">Score: 0</p>
+  <p id="totalScore">Score: 0</p>
   <div class="tap-restart">TAP TO PLAY AGAIN</div>
 </div>
 
@@ -429,27 +429,27 @@ let gameState = 'start'; // start | instructions | playing | dead | win
 const LEVELS = [
   { // L1
     quota: 8, enemyCount: 3, enemyBaseSpeed: 60, spawnRate: 4.0,
-    attractionRadius: 220, blastRadius: 180, wallBounceMinImpulse: 700,
+    attractionRadius: 220, blastRadius: 180, wallBounceMinImpulse: 150,
     orbiting: false, counterPull: false, wallPulse: false, dense: false
   },
   { // L2
     quota: 14, enemyCount: 4, enemyBaseSpeed: 80, spawnRate: 3.0,
-    attractionRadius: 220, blastRadius: 175, wallBounceMinImpulse: 800,
+    attractionRadius: 220, blastRadius: 175, wallBounceMinImpulse: 200,
     orbiting: true, counterPull: false, wallPulse: false, dense: false
   },
   { // L3
     quota: 22, enemyCount: 6, enemyBaseSpeed: 95, spawnRate: 2.0,
-    attractionRadius: 200, blastRadius: 185, wallBounceMinImpulse: 800,
+    attractionRadius: 200, blastRadius: 185, wallBounceMinImpulse: 200,
     orbiting: true, counterPull: false, wallPulse: false, dense: true
   },
   { // L4
     quota: 30, enemyCount: 6, enemyBaseSpeed: 110, spawnRate: 1.8,
-    attractionRadius: 200, blastRadius: 175, wallBounceMinImpulse: 850,
+    attractionRadius: 200, blastRadius: 175, wallBounceMinImpulse: 250,
     orbiting: true, counterPull: true, wallPulse: false, dense: true
   },
   { // L5
     quota: 45, enemyCount: 8, enemyBaseSpeed: 130, spawnRate: 1.5,
-    attractionRadius: 190, blastRadius: 185, wallBounceMinImpulse: 900,
+    attractionRadius: 190, blastRadius: 185, wallBounceMinImpulse: 300,
     orbiting: true, counterPull: true, wallPulse: true, dense: true
   }
 ];
@@ -704,9 +704,9 @@ function updateEnemies(dt) {
         e.vy += (-e.y / d) * cfg.enemyBaseSpeed * 0.3 * dt;
       }
 
-      // Speed cap
+      // Speed cap — blasted enemies fly free, only cap ambient movement
       const spd = Math.sqrt(e.vx * e.vx + e.vy * e.vy);
-      if (spd > ENEMY_MAX_SPEED) {
+      if (!e.blasted && spd > ENEMY_MAX_SPEED) {
         e.vx = (e.vx / spd) * ENEMY_MAX_SPEED;
         e.vy = (e.vy / spd) * ENEMY_MAX_SPEED;
       }
@@ -826,17 +826,17 @@ function triggerDeath() {
   if (gameState !== 'playing') return;
   gameState = 'dead';
   playDeath();
-  document.getElementById('deathScore').textContent = `Score: ${score}`;
-  document.getElementById('deathLevel').textContent = `Level: ${currentLevel + 1}`;
-  document.getElementById('deathScreen').classList.add('visible');
+  document.getElementById('finalScore').textContent = `Score: ${score}`;
+  document.getElementById('finalLevel').textContent = `Level: ${currentLevel + 1}`;
+  document.getElementById('coreStruck').classList.add('visible');
   isHolding = false;
 }
 
 function triggerWin() {
   gameState = 'win';
   stopMusic();
-  document.getElementById('winScore').textContent = `Score: ${score}`;
-  document.getElementById('winScreen').classList.add('visible');
+  document.getElementById('totalScore').textContent = `Score: ${score}`;
+  document.getElementById('singularity').classList.add('visible');
   isHolding = false;
 }
 
@@ -1465,8 +1465,8 @@ requestAnimationFrame(ts => { lastTime = ts; requestAnimationFrame(gameLoop); })
 // ============================================================
 const startScreen = document.getElementById('startScreen');
 const instructionsScreen = document.getElementById('instructionsScreen');
-const deathScreenEl = document.getElementById('deathScreen');
-const winScreenEl = document.getElementById('winScreen');
+const deathScreenEl = document.getElementById('coreStruck');
+const winScreenEl = document.getElementById('singularity');
 
 // Show start screen with fade-in
 startScreen.style.opacity = '0';
